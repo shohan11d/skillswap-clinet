@@ -1,9 +1,15 @@
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
+
+// Fixed name declaration case collision here
+const interFont = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
 });
 
@@ -21,11 +27,14 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${interFont.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
+      {/* Added your theme colors to the body container to avoid layout flashes */}
+      <body className="min-h-screen bg-[#212121] text-neutral-400 selection:bg-blue-600/30">
         <Navbar />
-        <main>{children}</main>
+        <main className="min-h-[calc(100vh-64px)] w-full flex flex-col">
+          {children}
+        </main>
       </body>
     </html>
   );

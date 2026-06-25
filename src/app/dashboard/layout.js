@@ -1,4 +1,4 @@
-import DashboardSidebar from "@/components/components/dashboard/dashboardSidebar";
+import DashboardSidebar from "@/components/dashboard/dashboardSidebar";
 
 export default function DashboardLayout({ children }) {
   return (
@@ -8,8 +8,6 @@ export default function DashboardLayout({ children }) {
         <DashboardSidebar />
 
         <div className="flex-1 overflow-y-auto">
-          {/* navbar */}
-          <div className="border border-b-1  p-3 py-5 w-full ">Navbar</div>
           <main className="p-5">{children}</main>
         </div>
       </div>
