@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Menu, X, Briefcase, Users, LogIn, House, LogOut, Loader2 } from "lucide-react";
-import Logo from "@/components/Logo"; // Updated root alias path
+import Logo from "@/components/Logo";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -13,17 +13,12 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSignOutLoading, setIsSignOutLoading] = useState(false);
 
-
-  // Hook called safely at the absolute top level
   const { data: session } = authClient.useSession();
   console.log(session);
 
-  // Early return rule executed safely after hooks initialization
   if (pathname.includes("dashboard")) return null;
 
-  // Custom metadata parsed cleanly
-  const userRole = session?.user?.data?.role;
-  console.log(userRole);
+  const userRole = session?.user?.data?.role || session?.user?.role;
 
   const handleSignOut = async () => {
     setIsSignOutLoading(true);
@@ -62,7 +57,6 @@ export default function Navbar() {
             >
               <House size={16} /> Home
             </Link>
-
             <Link
               href="/tasks"
               className="flex items-center gap-1.5 hover:text-white transition-colors"
@@ -79,7 +73,7 @@ export default function Navbar() {
 
           {/* Authentication Actions */}
           <div className="hidden md:flex items-center space-x-4 text-sm font-medium">
-            <div className="h-4 w-[1px] bg-neutral-700 mr-2" /> {/* Divider */}
+            <div className="h-4 w-[1px] bg-neutral-700 mr-2" />
             {session ? (
               <div className="flex items-center gap-4">
                 <Link
@@ -89,8 +83,17 @@ export default function Navbar() {
                   <LogIn size={16} /> Dashboard
                 </Link>
                 
-                <div className="flex items-center gap-2 rounded-md bg-[#212121] border border-neutral-800 px-3 py-1.5 text-xs text-neutral-300">
-                  <span className="font-semibold text-white max-w-[100px] truncate">
+                <div className="flex items-center gap-2 rounded-md bg-[#212121] border border-neutral-800 pl-2 pr-3 py-1 text-xs text-neutral-300">
+                  {/* Dynamic Desktop Profile Avatar Image */}
+                  {session.user.image ? (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "User avatar"}
+                      referrerPolicy="no-referrer"
+                      className="w-6 h-6 rounded-full border border-neutral-700 object-cover"
+                    />
+                  ) : null}
+                  <span className="font-semibold text-white max-w-[100px] truncate ml-1">
                     {session.user.name}
                   </span>
                   <span className="px-1.5 py-0.5 rounded text-[10px] uppercase font-bold text-blue-400 bg-blue-950/40 border border-blue-900/30">
@@ -171,10 +174,21 @@ export default function Navbar() {
           {session ? (
             <div className="space-y-3 px-3">
               <div className="flex items-center justify-between rounded-lg bg-[#212121] p-3 border border-neutral-800">
-                <span className="text-sm font-semibold text-white truncate">
-                  {session.user.name}
-                </span>
-                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold text-blue-400 bg-blue-950/40">
+                <div className="flex items-center gap-2.5 truncate">
+                  {/* Dynamic Mobile Profile Avatar Image */}
+                  {session.user.image && (
+                    <img
+                      src={session.user.image}
+                      alt={session.user.name || "User avatar"}
+                      referrerPolicy="no-referrer"
+                      className="w-7 h-7 rounded-full border border-neutral-700 object-cover shrink-0"
+                    />
+                  )}
+                  <span className="text-sm font-semibold text-white truncate">
+                    {session.user.name}
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded text-[10px] uppercase font-bold text-blue-400 bg-blue-950/40 shrink-0">
                   {userRole}
                 </span>
               </div>

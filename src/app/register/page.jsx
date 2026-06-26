@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Check,
   X,
+  Link2,
 } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "@/components/Logo";
@@ -33,6 +34,7 @@ export default function RegisterPage() {
     defaultValues: {
       name: "",
       email: "",
+      image: "",
       password: "",
       role: "client",
     },
@@ -55,6 +57,7 @@ export default function RegisterPage() {
         email: formData.email,
         password: formData.password,
         name: formData.name,
+        image: formData.image || "", // Passes image data cleanly to BetterAuth context
         plan: "free",
         role: formData.role,
       });
@@ -180,6 +183,24 @@ export default function RegisterPage() {
                 {errors.email.message}
               </p>
             )}
+          </div>
+
+          {/* Profile Image URL Field */}
+          <div>
+            <label className="block text-[10px] font-medium uppercase tracking-wider text-neutral-400 mb-1.5">
+              Profile Image URL
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 text-neutral-500 pointer-events-none">
+                <Link2 size={16} />
+              </div>
+              <input
+                type="url"
+                {...register("image")}
+                className="w-full rounded-lg border border-neutral-800 bg-[#212121] py-1.5 pl-9 pr-3 text-xs text-white placeholder-neutral-600 outline-none transition-all focus:border-neutral-700"
+                placeholder="https://example.com/avatar.jpg"
+              />
+            </div>
           </div>
 
           <div>

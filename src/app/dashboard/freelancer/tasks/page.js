@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Calendar, User, Loader2, Search, SlidersHorizontal } from "lucide-react";
+import Link from "next/link";
 
 const CATEGORIES = ["All", "Design", "Writing", "Development", "Marketing", "Other"];
 
@@ -146,9 +147,9 @@ export default function BrowseTasks() {
                       ${task.budget}{" "}
                       <span className="text-xs text-zinc-500">USD</span>
                     </span>
-                    <button className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors">
+                    <Link href={`/dashboard/freelancer/tasks/${task._id}`} className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors">
                       View Details
-                    </button>
+                    </Link>
                   </div>
                 </div>
               </div>

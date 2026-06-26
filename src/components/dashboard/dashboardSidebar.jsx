@@ -46,9 +46,9 @@ export default async function DashboardSidebar() {
       { icon: CreditCard, label: "Payments", link: "/dashboard/client/payments" },
     ],
     admin: [
-      { icon: LayoutDashboard, label: "Overview", link: "/dashboard/client" }, // Fallback placeholder path preserved
-      { icon: Users, label: "User Manage", link: "/dashboard/client/products" },
-      { icon: Wallet, label: "Transaction", link: "/dashboard/client/transaction" },
+      { icon: LayoutDashboard, label: "Overview", link: "/dashboard/admin" }, // Fallback placeholder path preserved
+      { icon: Users, label: "User Manage", link: "/dashboard/admin/users" },
+      { icon: Wallet, label: "Transaction", link: "/dashboard/admin/payments" },
     ],
   };
 

@@ -3,25 +3,21 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, User, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function MyTasks() {
+  const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  // Get current user session via BetterAuth
-  const {
-    data: session,
-    isPending, // loading state for authentication
-  } = authClient.useSession();
-  
+  const { data: session, isPending } = authClient.useSession();
   const email = session?.user?.email;
 
   useEffect(() => {
-    // 1. Wait until the session loading state is finished
     if (isPending) return;
 
-    // 2. If the session finished loading but no email exists, stop and throw an error
     if (!email) {
       setError("Please sign in to view your tasks.");
       setLoading(false);
@@ -30,9 +26,8 @@ export default function MyTasks() {
 
     setLoading(true);
 
-    // 3. Fetch from /client/tasks and append the active session email
     fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/client/tasks?email=${email}`, {
-      cache: 'no-store' // Prevents Vercel deployment caching
+      cache: 'no-store'
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load your personal task entries.");
@@ -42,9 +37,8 @@ export default function MyTasks() {
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
       
-  }, [email, isPending]); // Runs whenever the session finishes loading or email changes
+  }, [email, isPending]);
 
-  // Enforce a unified loading view for both auth check and backend data fetching
   if (isPending || loading) {
     return (
       <div className="min-h-screen bg-zinc-950 flex items-center justify-center">
@@ -81,7 +75,11 @@ export default function MyTasks() {
                   <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-500/10 text-blue-400 border border-blue-500/20">
                     {task.category}
                   </span>
-                  <span className="px-2 py-0.5 text-xs font-medium rounded bg-zinc-800 border border-zinc-700 text-zinc-400 uppercase">
+                  <span className={`px-2 py-0.5 text-xs font-medium rounded border uppercase ${
+                    task.status === "completed" 
+                      ? "bg-blue-950/40 text-blue-400 border-blue-900/30" 
+                      : "bg-zinc-800 border-zinc-700 text-zinc-400"
+                  }`}>
                     {task.status}
                   </span>
                 </div>
@@ -111,9 +109,21 @@ export default function MyTasks() {
                       ${task.budget}{" "}
                       <span className="text-xs text-zinc-500">USD</span>
                     </span>
-                    <button className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors">
-                      View Details
-                    </button>
+                    {task.status === "completed" ? (
+                      <button 
+                        disabled
+                        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors opacity-40 cursor-not-allowed"
+                      >
+                        Locked
+                      </button>
+                    ) : (
+                      <Link 
+                        href={`/dashboard/client/tasks/${task._id}`}
+                        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors inline-block text-center"
+                      >
+                        View Details
+                      </Link>
+                    )}
                   </div>
                 </div>
               </div>
