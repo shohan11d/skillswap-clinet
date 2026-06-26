@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // Added useEffect
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client"; 
@@ -11,13 +11,37 @@ import Logo from "@/components/Logo";
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); 
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Check if user is already signed in to bypass login form
+  const { data: session, isPending } = authClient.useSession();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+
+  // Centralized redirect engine
+  const handleRoleRedirect = (userObject) => {
+    const userRole = userObject?.role?.toLowerCase() || "client";
+
+    if (userRole === "admin") {
+      router.push("/dashboard/admin");
+    } else if (userRole === "freelancer") {
+      router.push("/dashboard/freelancer");
+    } else {
+      router.push("/dashboard/client");
+    }
+    router.refresh();
+  };
+
+  // ✅ Fixed: Safe automatic redirect inside useEffect
+  useEffect(() => {
+    if (!isPending && session?.user) {
+      handleRoleRedirect(session.user);
+    }
+  }, [session, isPending]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -37,8 +61,7 @@ export default function LoginPage() {
       }
 
       console.log("login success", data);
-      router.push("/dashboard/client");
-      router.refresh();
+      handleRoleRedirect(data.user);
     } catch (err) {
       setError("An unexpected system exception occurred. Please try again.");
       setLoading(false);
@@ -51,13 +74,22 @@ export default function LoginPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard",
+        callbackURL: "/dashboard/sync", 
       });
     } catch (err) {
       setError("Failed to initialize Google authentication. Please try again.");
       setGoogleLoading(false);
     }
   };
+
+  // Keep showing loading screen while checking user's auth status or if a redirect is already active
+  if (isPending || session?.user) {
+    return (
+      <div className="min-h-screen bg-[#212121] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#212121] px-4 py-6 text-neutral-200 w-full">
@@ -146,7 +178,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading || googleLoading}
-            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-2 text-xs font-semibold text-white transition-all hover:bg-blue-500 disabled:opacity-50 disabled:hover:bg-blue-600 shadow-lg shadow-blue-900/10 mt-1"
+            className="flex w-full items-center justify-center gap-2 rounded-lg bg-blue-600 py-2 text-xs font-semibold text-white transition-all hover:bg-blue-500 disabled:opacity-50 shadow-lg shadow-blue-900/10 mt-1"
           >
             {loading ? (
               <>

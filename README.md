@@ -1,36 +1,343 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# SkillSwap - Freelance Micro-Task Platform
 
-## Getting Started
+SkillSwap is a full-stack freelance marketplace where **Clients** can post micro-tasks and **Freelancers** can browse tasks, submit proposals, complete projects, and receive payments securely. The platform also includes an **Admin Dashboard** for managing users, tasks, and transactions.
 
-First, run the development server:
+## 🌐 Live Demo
+
+**Live Website:** https://taskhive-eight-phi.vercel.app/
+
+## 📌 Project Purpose
+
+SkillSwap simplifies the process of hiring freelancers for small online tasks. Clients can publish jobs, review proposals, hire freelancers, and make secure payments through Stripe. Freelancers can discover opportunities, submit proposals, manage active projects, and track their earnings—all from a modern dashboard.
+
+---
+
+## ✨ Key Features
+
+### Authentication & Authorization
+
+* Better Auth authentication
+* Email & Password login
+* Google OAuth login
+* Role-based authentication (Client, Freelancer, Admin)
+* Protected dashboard routes
+* Blocked users cannot log in
+
+### Client Features
+
+* Post new tasks
+* Edit/Delete open tasks
+* Manage freelancer proposals
+* Accept or reject proposals
+* Stripe payment integration
+* Track task progress
+
+### Freelancer Features
+
+* Browse available tasks
+* Search and filter tasks
+* Submit one proposal per task
+* Track proposal status
+* Manage active projects
+* Submit project deliverables
+* View earnings
+* Edit public profile
+
+### Admin Features
+
+* Dashboard analytics
+* Manage users
+* Block/Unblock accounts
+* Manage tasks
+* View payment history
+* Monitor platform activity
+
+### Payment System
+
+* Stripe Checkout integration
+* Secure payment verification
+* Payment success page
+* Transaction history
+
+### Additional Features
+
+* Responsive design
+* Modern dashboard UI
+* Search functionality
+* Category filtering
+* Server-side pagination
+* Role-based navigation
+* Custom 404 page
+* Protected API routes
+
+---
+
+# 🛠️ Tech Stack
+
+### Frontend
+
+* Next.js 15
+* React
+* Tailwind CSS
+* shadcn/ui
+* TypeScript
+* React Hook Form
+* TanStack Query
+* Axios
+* Lucide React
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB
+* Better Auth
+* Stripe
+* JWT
+* CORS
+* dotenv
+
+---
+
+# 📂 Database Collections
+
+### Users
+
+* name
+* email
+* image
+* role
+* skills
+* bio
+* isBlocked
+* createdAt
+
+### Tasks
+
+* title
+* category
+* description
+* budget
+* deadline
+* client_email
+* status
+* deliverable_url
+* createdAt
+
+### Proposals
+
+* task_id
+* freelancer_email
+* proposed_budget
+* estimated_days
+* cover_note
+* status
+* submitted_at
+
+### Payments
+
+* client_email
+* freelancer_email
+* task_id
+* amount
+* transaction_id
+* payment_status
+* paid_at
+
+### Reviews
+
+* task_id
+* reviewer_email
+* reviewee_email
+* rating
+* comment
+* created_at
+
+---
+
+# 🚀 Installation
+
+Clone the repositories.
+
+```bash
+git clone https://github.com/your-username/skillswap-client.git
+git clone https://github.com/your-username/skillswap-server.git
+```
+
+Install dependencies.
+
+```bash
+npm install
+```
+
+Create environment files.
+
+Frontend (`.env.local`)
+
+```env
+NEXT_PUBLIC_API_URL=
+NEXT_PUBLIC_BASE_URL=
+
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+STRIPE_PUBLISHABLE_KEY=
+```
+
+Backend (`.env`)
+
+```env
+PORT=5000
+
+MONGODB_URI=
+
+JWT_SECRET=
+
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+```
+
+Run the development servers.
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+# 👥 Test Credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Admin
 
-## Learn More
+**Email**
 
-To learn more about Next.js, take a look at the following resources:
+```
+admin1@taskhive.com
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Password**
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```
+admin1@taskhive.com
+```
 
-## Deploy on Vercel
+## Freelancer
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+**Email**
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+freelanceruser3@gmail.com
+```
+
+**Password**
+
+```
+freelanceruser3@gmail.com
+```
+
+---
+
+# 📁 Project Structure
+
+```
+client/
+├── app/
+├── components/
+├── hooks/
+├── providers/
+├── lib/
+└── public/
+
+server/
+├── routes/
+├── middleware/
+├── controllers/
+├── database/
+└── index.js
+```
+
+---
+
+# 📦 NPM Packages
+
+### Frontend
+
+* next
+* react
+* tailwindcss
+* shadcn/ui
+* better-auth
+* @tanstack/react-query
+* react-hook-form
+* axios
+* zod
+* lucide-react
+* sonner
+
+### Backend
+
+* express
+* mongodb
+* better-auth
+* stripe
+* jsonwebtoken
+* cors
+* dotenv
+* cookie-parser
+
+---
+
+# 🔐 Security
+
+* Environment variables for all secret keys
+* Better Auth authentication
+* JWT authorization
+* HTTP-only cookies
+* Protected API routes
+* Role-based access control
+* Blocked user protection
+* Secure Stripe payment verification
+
+---
+
+# 📱 Responsive Design
+
+The application is fully responsive and optimized for:
+
+* Desktop
+* Laptop
+* Tablet
+* Mobile
+
+---
+
+# 🔗 Links
+
+**Live Site**
+
+https://taskhive-eight-phi.vercel.app/
+
+**Client Repository**
+
+https://github.com/your-username/skillswap-client
+
+**Server Repository**
+
+https://github.com/your-username/skillswap-server
+
+---
+
+## Developed By
+
+**Mohammad Shohan**
+
+Frontend Developer | React | Next.js | TypeScript
