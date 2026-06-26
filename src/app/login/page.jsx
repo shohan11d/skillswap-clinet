@@ -74,7 +74,7 @@ export default function LoginPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard/sync", 
+        callbackURL: "/dashboard/client", 
       });
     } catch (err) {
       setError("Failed to initialize Google authentication. Please try again.");
