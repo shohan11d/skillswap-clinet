@@ -51,7 +51,11 @@ export default async function DashboardSidebar() {
         label: "Active Projects",
         link: "/dashboard/freelancer/projects",
       },
-     
+        {
+        icon: Wallet,
+        label: "Earnings",
+        link: "/dashboard/freelancer/earnings",
+      },
       {
         icon: Wallet,
         label: "Edit Profile",
@@ -81,6 +85,7 @@ export default async function DashboardSidebar() {
       { icon: LayoutDashboard, label: "Overview", link: "/dashboard/admin" }, // Fallback placeholder path preserved
       { icon: Users, label: "User Manage", link: "/dashboard/admin/users" },
       { icon: Users, label: "Task Manage", link: "/dashboard/admin/tasks" },
+      { icon: Users, label: "Total Transaction", link: "/dashboard/admin/transactions" },
     ],
   };
 

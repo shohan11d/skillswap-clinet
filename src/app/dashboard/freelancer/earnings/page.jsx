@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { Loader2, DollarSign, Calendar, User } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
-export default function ClientPayments() {
-  const [payments, setPayments] = useState([]);
+export default function FreelancerEarnings() {
+  const [earnings, setEarnings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -20,12 +20,12 @@ export default function ClientPayments() {
       return;
     }
 
-    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/payments/client?email=${email}`)
+    fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/freelancer/earnings?email=${email}`)
       .then((res) => {
-        if (!res.ok) throw new Error("Failed to load payments.");
+        if (!res.ok) throw new Error("Failed to load earnings.");
         return res.json();
       })
-      .then((data) => setPayments(data.payments || []))
+      .then((data) => setEarnings(data.earnings || []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
   }, [email, isPending]);
@@ -38,7 +38,7 @@ export default function ClientPayments() {
     );
   }
 
-  const total = payments.reduce((sum, p) => sum + p.amount, 0);
+  const total = earnings.reduce((sum, p) => sum + p.amount, 0);
 
   return (
     <div className="min-h-screen bg-zinc-900 text-zinc-100 py-12 px-4">
@@ -46,24 +46,24 @@ export default function ClientPayments() {
 
         <div className="mb-8">
           <h1 className="text-3xl font-extrabold text-white tracking-tight">
-            Payment History
+            Earnings History
           </h1>
           <p className="text-zinc-500 text-sm mt-1">
-            All payments made to freelancers on your tasks.
+            All payments received from clients for completed tasks.
           </p>
         </div>
 
         {/* Summary card */}
-        <div className="bg-zinc-950 border border-indigo-500/20 rounded-2xl p-6 flex items-center justify-between mb-8">
+        <div className="bg-zinc-950 border border-emerald-500/20 rounded-2xl p-6 flex items-center justify-between mb-8">
           <div>
             <p className="text-xs text-zinc-600 uppercase tracking-widest mb-1">
-              Total Spent
+              Total Earned
             </p>
             <p className="text-4xl font-black text-white">
               ${total.toLocaleString()}
             </p>
           </div>
-          <div className="p-4 rounded-xl bg-indigo-500/10 text-indigo-400">
+          <div className="p-4 rounded-xl bg-emerald-500/10 text-emerald-400">
             <DollarSign className="w-7 h-7" />
           </div>
         </div>
@@ -74,8 +74,8 @@ export default function ClientPayments() {
           </p>
         )}
 
-        {!error && payments.length === 0 ? (
-          <p className="text-zinc-500 text-sm">No payments made yet.</p>
+        {!error && earnings.length === 0 ? (
+          <p className="text-zinc-500 text-sm">No earnings yet.</p>
         ) : (
           <div className="bg-zinc-950 border border-zinc-800 rounded-2xl overflow-hidden">
             <div className="overflow-x-auto">
@@ -86,7 +86,7 @@ export default function ClientPayments() {
                       Task
                     </th>
                     <th className="px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
-                      Freelancer
+                      Client
                     </th>
                     <th className="px-5 py-3.5 text-[11px] font-semibold uppercase tracking-wider text-zinc-500">
                       Amount
@@ -100,7 +100,7 @@ export default function ClientPayments() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-800">
-                  {payments.map((payment) => (
+                  {earnings.map((payment) => (
                     <tr
                       key={payment._id}
                       className="hover:bg-zinc-800/50 transition-colors"
@@ -114,7 +114,7 @@ export default function ClientPayments() {
                       <td className="px-5 py-4">
                         <span className="flex items-center gap-1.5 text-zinc-300 text-xs">
                           <User className="w-3.5 h-3.5 text-zinc-500" />
-                          {payment.freelancer_email}
+                          {payment.client_name || payment.client_email}
                         </span>
                       </td>
 
