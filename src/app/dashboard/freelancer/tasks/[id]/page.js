@@ -1,10 +1,18 @@
 "use client";
 
 import React, { useEffect, useState, use } from "react";
-import { Calendar, User, Loader2, ArrowLeft, DollarSign, Clock } from "lucide-react";
+import {
+  Calendar,
+  User,
+  Loader2,
+  ArrowLeft,
+  DollarSign,
+  Clock,
+} from "lucide-react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
 import { authClient } from "@/lib/auth-client";
+import { getClientToken } from "@/lib/get-token";
 
 export default function TaskDetailsPage({ params }) {
   const { id } = use(params);
@@ -46,22 +54,26 @@ export default function TaskDetailsPage({ params }) {
   }, [id]);
 
   const onSubmit = async (formData) => {
+    const token = await getClientToken();
     setProposalError("");
     setProposalSuccess("");
     setProposalLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/proposals`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          task_id: id,
-          freelancer_email: user.email,
-          proposed_budget: formData.proposed_budget,
-          estimated_days: formData.estimated_days,
-          cover_note: formData.cover_note,
-        }),
-      });
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/proposals`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json", authorization: `Bearer ${token}` },
+          body: JSON.stringify({
+            task_id: id,
+            freelancer_email: user.email,
+            proposed_budget: formData.proposed_budget,
+            estimated_days: formData.estimated_days,
+            cover_note: formData.cover_note,
+          }),
+        },
+      );
       const data = await res.json();
       if (!res.ok) {
         setProposalError(data.message || "Failed to submit proposal.");
@@ -88,7 +100,10 @@ export default function TaskDetailsPage({ params }) {
     return (
       <div className="min-h-screen bg-zinc-950 flex flex-col items-center justify-center gap-4">
         <p className="text-rose-400 text-sm">{error || "Task not found."}</p>
-        <Link href="/tasks" className="text-xs text-blue-400 hover:text-blue-300">
+        <Link
+          href="/tasks"
+          className="text-xs text-blue-400 hover:text-blue-300"
+        >
           ← Back to Browse Tasks
         </Link>
       </div>
@@ -101,7 +116,6 @@ export default function TaskDetailsPage({ params }) {
   return (
     <div className="min-h-screen bg-zinc-950 text-zinc-100 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-
         <Link
           href="/tasks"
           className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors mb-8"
@@ -111,7 +125,6 @@ export default function TaskDetailsPage({ params }) {
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
           {/* Task Details */}
           <div className="lg:col-span-2">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6">
@@ -139,22 +152,30 @@ export default function TaskDetailsPage({ params }) {
 
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 border-t border-zinc-800 pt-5">
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] uppercase tracking-wider text-zinc-500">Budget</span>
+                  <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                    Budget
+                  </span>
                   <span className="flex items-center gap-1 text-white font-bold text-lg">
                     <DollarSign className="w-4 h-4 text-emerald-400" />
                     {task.budget}
-                    <span className="text-xs text-zinc-500 font-normal">USD</span>
+                    <span className="text-xs text-zinc-500 font-normal">
+                      USD
+                    </span>
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] uppercase tracking-wider text-zinc-500">Deadline</span>
+                  <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                    Deadline
+                  </span>
                   <span className="flex items-center gap-1.5 text-amber-400 text-sm font-semibold">
                     <Calendar className="w-3.5 h-3.5" />
                     {task.deadline}
                   </span>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] uppercase tracking-wider text-zinc-500">Posted by</span>
+                  <span className="text-[10px] uppercase tracking-wider text-zinc-500">
+                    Posted by
+                  </span>
                   <span className="flex items-center gap-1.5 text-zinc-300 text-sm truncate">
                     <User className="w-3.5 h-3.5 text-zinc-500" />
                     {task.client_name || task.client_email}
@@ -167,11 +188,15 @@ export default function TaskDetailsPage({ params }) {
           {/* Proposal Form */}
           <div className="lg:col-span-1">
             <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 sticky top-6">
-              <h2 className="text-sm font-bold text-white mb-4">Submit a Proposal</h2>
+              <h2 className="text-sm font-bold text-white mb-4">
+                Submit a Proposal
+              </h2>
 
               {!user && (
                 <div className="space-y-3 text-center">
-                  <p className="text-zinc-400 text-xs">Login as a freelancer to apply.</p>
+                  <p className="text-zinc-400 text-xs">
+                    Login as a freelancer to apply.
+                  </p>
                   <Link
                     href="/login"
                     className="block w-full py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-xl transition-colors"
@@ -182,20 +207,25 @@ export default function TaskDetailsPage({ params }) {
               )}
 
               {user && !isFreelancer && (
-                <p className="text-zinc-500 text-xs">Only freelancer accounts can submit proposals.</p>
+                <p className="text-zinc-500 text-xs">
+                  Only freelancer accounts can submit proposals.
+                </p>
               )}
 
               {user && isFreelancer && isOwnTask && (
-                <p className="text-zinc-500 text-xs">You cannot apply to your own task.</p>
+                <p className="text-zinc-500 text-xs">
+                  You cannot apply to your own task.
+                </p>
               )}
 
               {user && isFreelancer && !isOwnTask && task.status !== "open" && (
-                <p className="text-zinc-500 text-xs">This task is no longer accepting proposals.</p>
+                <p className="text-zinc-500 text-xs">
+                  This task is no longer accepting proposals.
+                </p>
               )}
 
               {user && isFreelancer && !isOwnTask && task.status === "open" && (
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
                   <div>
                     <label className="block text-[10px] font-medium uppercase tracking-wider text-zinc-400 mb-1.5">
                       Your Budget (USD)
@@ -206,14 +236,19 @@ export default function TaskDetailsPage({ params }) {
                         type="number"
                         {...register("proposed_budget", {
                           required: "Budget is required",
-                          min: { value: 1, message: "Budget must be at least $1" },
+                          min: {
+                            value: 1,
+                            message: "Budget must be at least $1",
+                          },
                         })}
                         placeholder="150"
                         className="w-full bg-zinc-800 border border-zinc-700 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-zinc-600 outline-none focus:border-zinc-600 transition-colors"
                       />
                     </div>
                     {errors.proposed_budget && (
-                      <p className="mt-1 text-[11px] text-rose-400">{errors.proposed_budget.message}</p>
+                      <p className="mt-1 text-[11px] text-rose-400">
+                        {errors.proposed_budget.message}
+                      </p>
                     )}
                   </div>
 
@@ -234,7 +269,9 @@ export default function TaskDetailsPage({ params }) {
                       />
                     </div>
                     {errors.estimated_days && (
-                      <p className="mt-1 text-[11px] text-rose-400">{errors.estimated_days.message}</p>
+                      <p className="mt-1 text-[11px] text-rose-400">
+                        {errors.estimated_days.message}
+                      </p>
                     )}
                   </div>
 
@@ -245,14 +282,19 @@ export default function TaskDetailsPage({ params }) {
                     <textarea
                       {...register("cover_note", {
                         required: "Cover note is required",
-                        minLength: { value: 20, message: "At least 20 characters required" },
+                        minLength: {
+                          value: 20,
+                          message: "At least 20 characters required",
+                        },
                       })}
                       rows={4}
                       placeholder="Briefly explain why you're a great fit..."
                       className="w-full bg-zinc-800 border border-zinc-700 rounded-xl px-3 py-2 text-xs text-white placeholder-zinc-600 outline-none focus:border-zinc-600 transition-colors resize-none"
                     />
                     {errors.cover_note && (
-                      <p className="mt-1 text-[11px] text-rose-400">{errors.cover_note.message}</p>
+                      <p className="mt-1 text-[11px] text-rose-400">
+                        {errors.cover_note.message}
+                      </p>
                     )}
                   </div>
 

@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { PlusCircle, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { getClientToken } from "@/lib/get-token";
 
 export default function PostTask() {
   const {
@@ -13,7 +14,7 @@ export default function PostTask() {
     refetch, //refetch the session
   } = authClient.useSession();
   const email = session?.user?.email;
-  console.log(email);
+
 
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
@@ -27,6 +28,9 @@ export default function PostTask() {
   } = useForm();
 
   const onSubmit = async (data) => {
+    // const { data: token } = await authClient.token();
+    // console.log("token", token);
+    const token = await getClientToken();
     setLoading(true);
     setServerError("");
     setSuccessMessage("");
@@ -43,13 +47,17 @@ export default function PostTask() {
 
     try {
       // Points directly to your Next.js API route route handlers
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tasks`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_SERVER_URL}/tasks`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(taskPayload),
         },
-        body: JSON.stringify(taskPayload),
-      });
+      );
 
       const result = await response.json();
 
