@@ -34,7 +34,6 @@ export default function BrowseFreelancers() {
   return (
     <div className="min-h-screen bg-zinc-800 text-white py-12 px-4">
       <div className="max-w-7xl mx-auto">
-
         <div className="mb-10">
           <h1 className="text-3xl font-bold">Browse Freelancers</h1>
           <p className="text-zinc-400 mt-2">
@@ -72,16 +71,22 @@ export default function BrowseFreelancers() {
                     </div>
                   )}
                   <div>
-                    <h2 className="font-bold text-lg leading-tight">{f.name || "Unnamed"}</h2>
+                    <h2 className="font-bold text-lg leading-tight">
+                      {f.name || "Unnamed"}
+                    </h2>
                     {f.hourlyRate > 0 && (
-                      <p className="text-zinc-400 text-sm">${f.hourlyRate}/hr</p>
+                      <p className="text-zinc-400 text-sm">
+                        ${f.hourlyRate}/hr
+                      </p>
                     )}
                   </div>
                 </div>
 
                 {/* Bio */}
                 {f.bio && (
-                  <p className="text-zinc-400 text-sm line-clamp-2 mb-4">{f.bio}</p>
+                  <p className="text-zinc-400 text-sm line-clamp-2 mb-4">
+                    {f.bio}
+                  </p>
                 )}
 
                 {/* Skills */}
@@ -107,7 +112,10 @@ export default function BrowseFreelancers() {
                 <div className="border-t border-zinc-800 mt-auto pt-4 flex items-center justify-between">
                   <div className="flex items-center gap-4 text-sm text-zinc-400">
                     <span className="flex items-center gap-1">
-                      <Star size={14} className="text-yellow-400 fill-yellow-400" />
+                      <Star
+                        size={14}
+                        className="text-yellow-400 fill-yellow-400"
+                      />
                       {f.averageRating > 0 ? f.averageRating : "New"}
                     </span>
                     <span className="flex items-center gap-1">
@@ -117,7 +125,7 @@ export default function BrowseFreelancers() {
                   </div>
 
                   <Link
-                    href={`/freelancers/${encodeURIComponent(f.email)}`}
+                    href={`/freelancers/${f._id}`}
                     className="bg-blue-600 hover:bg-blue-700 transition px-4 py-2 rounded-lg text-sm font-medium"
                   >
                     View Profile
@@ -128,7 +136,7 @@ export default function BrowseFreelancers() {
           </div>
         )}
       </div>
-      <Footer/>
+      <Footer />
     </div>
   );
 }

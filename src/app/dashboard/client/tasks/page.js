@@ -3,11 +3,9 @@
 import React, { useEffect, useState } from "react";
 import { Calendar, User, Loader2 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 
 export default function MyTasks() {
-  const router = useRouter();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -27,7 +25,7 @@ export default function MyTasks() {
     setLoading(true);
 
     fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/client/tasks?email=${email}`, {
-      cache: 'no-store'
+      cache: "no-store",
     })
       .then((res) => {
         if (!res.ok) throw new Error("Failed to load your personal task entries.");
@@ -36,8 +34,21 @@ export default function MyTasks() {
       .then((data) => setTasks(data.tasks || []))
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false));
-      
   }, [email, isPending]);
+
+  const handleDelete = async (taskId) => {
+    if (!confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_SERVER_URL}/tasks/${taskId}`, {
+        method: "DELETE",
+      });
+      if (!res.ok) throw new Error("Failed to delete task.");
+      setTasks((prev) => prev.filter((t) => t._id !== taskId));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   if (isPending || loading) {
     return (
@@ -76,8 +87,8 @@ export default function MyTasks() {
                     {task.category}
                   </span>
                   <span className={`px-2 py-0.5 text-xs font-medium rounded border uppercase ${
-                    task.status === "completed" 
-                      ? "bg-blue-950/40 text-blue-400 border-blue-900/30" 
+                    task.status === "completed"
+                      ? "bg-blue-950/40 text-blue-400 border-blue-900/30"
                       : "bg-zinc-800 border-zinc-700 text-zinc-400"
                   }`}>
                     {task.status}
@@ -104,25 +115,35 @@ export default function MyTasks() {
                       {task.deadline}
                     </span>
                   </div>
+
                   <div className="flex items-center justify-between pt-1">
                     <span className="text-2xl font-black text-white">
                       ${task.budget}{" "}
                       <span className="text-xs text-zinc-500">USD</span>
                     </span>
-                    {task.status === "completed" ? (
-                      <button 
+
+                    {task.status === "completed" || task.status === "in_progress" ? (
+                      <button
                         disabled
-                        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors opacity-40 cursor-not-allowed"
+                        className="px-4 py-2 bg-zinc-800 text-white font-semibold text-xs rounded-xl opacity-40 cursor-not-allowed"
                       >
                         Locked
                       </button>
                     ) : (
-                      <Link 
-                        href={`/dashboard/client/tasks/${task._id}`}
-                        className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors inline-block text-center"
-                      >
-                        View Details
-                      </Link>
+                      <div className="flex items-center gap-2">
+                        <Link
+                          href={`/dashboard/client/tasks/${task._id}`}
+                          className="px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition-colors inline-block text-center"
+                        >
+                          Edit Task
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(task._id)}
+                          className="px-4 py-2 cursor-pointer bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 font-semibold text-xs rounded-xl transition-colors"
+                        >
+                          Delete
+                        </button>
+                      </div>
                     )}
                   </div>
                 </div>

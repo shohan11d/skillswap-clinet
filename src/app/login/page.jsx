@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from "react"; // Added useEffect
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { authClient } from "@/lib/auth-client"; 
+import { authClient } from "@/lib/auth-client";
 import { Mail, Lock, Loader2, AlertCircle } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Logo from "@/components/Logo";
@@ -11,19 +11,21 @@ import Logo from "@/components/Logo";
 export default function LoginPage() {
   const router = useRouter();
   const [formData, setFormData] = useState({ email: "", password: "" });
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState("");
+  const [redirecting, setRedirecting] = useState(false);
 
-  // Check if user is already signed in to bypass login form
   const { data: session, isPending } = authClient.useSession();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Centralized redirect engine
   const handleRoleRedirect = (userObject) => {
+    if (redirecting) return;
+    setRedirecting(true);
+
     const userRole = userObject?.role?.toLowerCase() || "client";
 
     if (userRole === "admin") {
@@ -31,17 +33,15 @@ export default function LoginPage() {
     } else if (userRole === "freelancer") {
       router.push("/dashboard/freelancer");
     } else {
-      router.push("/dashboard/client");
+      router.push("/");
     }
-    router.refresh();
   };
 
-  // ✅ Fixed: Safe automatic redirect inside useEffect
   useEffect(() => {
-    if (!isPending && session?.user) {
+    if (!isPending && session?.user && !redirecting) {
       handleRoleRedirect(session.user);
     }
-  }, [session, isPending]);
+  }, [session, isPending, redirecting]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -60,10 +60,9 @@ export default function LoginPage() {
         return;
       }
 
-      console.log("login success", data);
       handleRoleRedirect(data.user);
     } catch (err) {
-      setError("An unexpected system exception occurred. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   };
@@ -74,7 +73,7 @@ export default function LoginPage() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard/client", 
+        callbackURL: "/dashboard/client",
       });
     } catch (err) {
       setError("Failed to initialize Google authentication. Please try again.");
@@ -82,8 +81,7 @@ export default function LoginPage() {
     }
   };
 
-  // Keep showing loading screen while checking user's auth status or if a redirect is already active
-  if (isPending || session?.user) {
+  if (isPending || session?.user || redirecting) {
     return (
       <div className="min-h-screen bg-[#212121] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
@@ -94,7 +92,7 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#212121] px-4 py-6 text-neutral-200 w-full">
       <div className="w-full max-w-sm rounded-xl border border-neutral-800 bg-[#262626] p-6 shadow-2xl flex flex-col items-stretch">
-        
+
         <div className="flex justify-center mb-4 scale-90">
           <Logo />
         </div>
